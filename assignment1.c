@@ -17,6 +17,28 @@ void program_init(SharedVariable* sv) {
 		printf("setup wiringPi failed !");
 	}
 	// You also need to initalize sensors here
+	pinMode (PIN_SMD_RED, OUTPUT);
+	pinMode (PIN_SMD_BLU, OUTPUT);
+	pinMode (PIN_SMD_GRN, OUTPUT);
+	softPwmCreate(PIN_SMD_RED, 0, 0xff);
+	softPwmCreate(PIN_SMD_BLU, 0, 0xff);
+	softPwmCreate(PIN_SMD_GRN, 0, 0xff);
+
+
+	pinMode (PIN_DIP_RED, OUTPUT);
+	pinMode (PIN_DIP_BLU, OUTPUT);
+	pinMode (PIN_DIP_GRN, OUTPUT);
+	softPwmCreate(PIN_DIP_RED, 0, 0xff);
+	softPwmCreate(PIN_DIP_BLU, 0, 0xff);
+	softPwmCreate(PIN_DIP_GRN, 0, 0xff);
+
+
+	pinMode (PIN_SMALL, INPUT);
+	pinMode (PIN_BIG, INPUT);
+
+	pinMode (PIN_BUTTON, INPUT);
+	pinMode (PIN_ALED, OUTPUT);
+
 }
 
 void program_body(SharedVariable* sv) {
@@ -28,13 +50,49 @@ void program_body(SharedVariable* sv) {
     // - So, don't make any loop (e.g., don't use "for" & "while")
     //   This would hurt the performance of the task.
     // - Don't make any delay using delay(), sleep(), etc
-   	int val;
-	pinMode (PIN_DIP_RED, OUTPUT);
-	pinMode (PIN_DIP_BLU, OUTPUT);
-	pinMode (PIN_DIP_GRN, OUTPUT);
-	pinMode (PIN_SMALL, INPUT);
-	int sound = digitalRead(PIN_SMALL);
+   	int states = digitalRead(PIN_BUTTON);
+	int smallsound = digitalRead(PIN_SMALL);
+	int bigsound = digitalRead(PIN_BIG);
 	
+	if(states == 0){ // running states
+		digitalWrite(PIN_ALED, HIGH);
+		if(smallsound == LOW){
+	       	softPwmWrite(PIN_DIP_RED, 0x00);
+	    	softPwmWrite(PIN_DIP_BLU, 0xff);
+	    	softPwmWrite(PIN_DIP_GRN, 0x00);
+		}else{
+	    	softPwmWrite(PIN_DIP_RED, 0xff);
+	    	softPwmWrite(PIN_DIP_BLU, 0x00);
+	    	softPwmWrite(PIN_DIP_GRN, 0x00);
+		}
+		// SMD
+		if(smallsound == LOW && bigsound == LOW){
+	    	softPwmWrite(PIN_SMD_RED, 0xff);
+	    	softPwmWrite(PIN_SMD_BLU, 0x00);
+	    	softPwmWrite(PIN_SMD_GRN, 0x00);
+		}else if(smallsound == HIGH && bigsound == LOW){
+	    	softPwmWrite(PIN_SMD_RED, 0xee);
+	    	softPwmWrite(PIN_SMD_BLU, 0x00);
+	    	softPwmWrite(PIN_SMD_GRN, 0xc8);
+		}else if(smallsound == LOW && bigsound == LOW){
+	    	softPwmWrite(PIN_SMD_RED, 0x80);
+	    	softPwmWrite(PIN_SMD_BLU, 0xff);
+	    	softPwmWrite(PIN_SMD_GRN, 0x00);
+		}else if(smallsound == LOW && bigsound == LOW){
+	    	softPwmWrite(PIN_SMD_RED, 0x00);
+	    	softPwmWrite(PIN_SMD_BLU, 0xff);
+	    	softPwmWrite(PIN_SMD_GRN, 0xff);
+		}
+		delay(300);
+	}else if(state == 1){
+		digitalWrite(PIN_ALED, LOW);
+		softPwmWrite(PIN_DIP_RED, 0x00);
+	    softPwmWrite(PIN_DIP_BLU, 0x00);
+	    softPwmWrite(PIN_DIP_GRN, 0x00);
+		softPwmWrite(PIN_SMD_RED, 0x00);
+	    softPwmWrite(PIN_SMD_BLU, 0x00);
+	    softPwmWrite(PIN_SMD_GRN, 0x00);
+	}
 //	for (val = 255; val> 0; val --){
 	printf("now sound = %d\n", sound);
 	if(sound == HIGH){
@@ -57,5 +115,11 @@ void program_body(SharedVariable* sv) {
 void program_exit(SharedVariable* sv) {
     // Clean up everything if needed.
     // This is called when the program finishes.
+	softPwmStop(PIN_DIP_BLU);
+	softPwmStop(PIN_DIP_RED);
+	softPwmStop(PIN_DIP_GRN);
+	softPwmStop(PIN_SMD_BLU);
+	softPwmStop(PIN_SMD_RED);
+	softPwmStop(PIN_SMD_GRN);
 }
 
