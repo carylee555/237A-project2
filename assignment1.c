@@ -12,7 +12,12 @@
 void program_init(SharedVariable* sv) {
 	// You can initialize the shared variable if needed.
 	sv->bProgramExit = 0;
-
+	// initialize wiringPi
+	if(wiringPiSetup() == -1){
+		printf("setup wiringPi failed !");
+		return 1;
+	}
+	
 	// You also need to initalize sensors here
 }
 
@@ -29,23 +34,23 @@ void program_body(SharedVariable* sv) {
 	pinMode (PIN_DIP_RED, OUTPUT);
 	pinMode (PIN_DIP_BLU, OUTPUT);
 	pinMode (PIN_DIP_GRN, OUTPUT);
-	Serial.begin (9600);
 	
 	for (val = 255; val> 0; val --){
-	    analogWrite (11, val);
-	    analogWrite (10, 255-val);
-	    analogWrite (9, 128-val);
-	    delay (10);
-	    Serial.println (val, DEC);
+	    //analogWrite (11, val);
+	    //analogWrite (10, 255-val);
+	    //analogWrite (9, 128-val);
+		digitalWrite(PIN_DIP_RED, HIGH);
+	    delay (300);
+		digitalWrite(PIN_DIP_BLU, HIGH);
+	    delay (300);
+		digitalWrite(PIN_DIP_GRN, HIGH);
+		printf(" all lights on");
+	    delay (300);
+		digitalWrite(PIN_DIP_RED, LOW);
+		digitalWrite(PIN_DIP_BLU, LOW);
+		digitalWrite(PIN_DIP_GRN, LOW);
+	    delay (100);
 	}
-	for (val = 0; val <255; val ++){
-	    analogWrite (11, val);
-	    analogWrite (10, 255-val);
-	    analogWrite (9, 128-val);
-	    delay (10);
-	    Serial.println (val, DEC);
-	}
-	 
 }
 
 void program_exit(SharedVariable* sv) {
