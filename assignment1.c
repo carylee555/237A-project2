@@ -26,9 +26,9 @@ void program_body(SharedVariable* sv) {
     //   This would hurt the performance of the task.
     // - Don't make any delay using delay(), sleep(), etc
    	int val;
-	pinMode (redpin, OUTPUT);
-	pinMode (bluepin, OUTPUT);
-	pinMode (greenpin, OUTPUT);
+	pinMode (PIN_DIP_RED, OUTPUT);
+	pinMode (PIN_DIP_BLU, OUTPUT);
+	pinMode (PIN_DIP_GRN, OUTPUT);
 	Serial.begin (9600);
 	
 	for (val = 255; val> 0; val --){
