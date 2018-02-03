@@ -15,9 +15,7 @@ void program_init(SharedVariable* sv) {
 	// initialize wiringPi
 	if(wiringPiSetup() == -1){
 		printf("setup wiringPi failed !");
-		return 1;
 	}
-	
 	// You also need to initalize sensors here
 }
 
@@ -34,22 +32,25 @@ void program_body(SharedVariable* sv) {
 	pinMode (PIN_DIP_RED, OUTPUT);
 	pinMode (PIN_DIP_BLU, OUTPUT);
 	pinMode (PIN_DIP_GRN, OUTPUT);
+	pinMode (PIN_SMALL, INPUT);
+	int sound = digitalRead(PIN_SMALL);
 	
-	for (val = 255; val> 0; val --){
-	    //analogWrite (11, val);
-	    //analogWrite (10, 255-val);
-	    //analogWrite (9, 128-val);
-		digitalWrite(PIN_DIP_RED, HIGH);
+//	for (val = 255; val> 0; val --){
+	printf("now sound = %d\n", sound);
+	if(sound == HIGH){
+	    softPwmCreate(PIN_DIP_BLU, 0, 0xff);
+	    //digitalWrite(PIN_DIP_RED, HIGH);
+	    softPwmWrite(PIN_DIP_BLU, 0x88);
 	    delay (300);
-		digitalWrite(PIN_DIP_BLU, HIGH);
+	    softPwmWrite(PIN_DIP_BLU, 0xff);
 	    delay (300);
-		digitalWrite(PIN_DIP_GRN, HIGH);
-		printf(" all lights on");
+	    softPwmWrite(PIN_DIP_BLU, 0x22);
+	    printf(" all lights on");
 	    delay (300);
-		digitalWrite(PIN_DIP_RED, LOW);
-		digitalWrite(PIN_DIP_BLU, LOW);
-		digitalWrite(PIN_DIP_GRN, LOW);
-	    delay (100);
+	    softPwmStop(PIN_DIP_BLU);
+	//	digitalWrite(PIN_DIP_BLU, LOW);
+	//	digitalWrite(PIN_DIP_GRN, LOW);
+	    delay (300);
 	}
 }
 
